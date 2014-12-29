@@ -16,4 +16,20 @@
             this.keypress(function(e){ if( e.keyCode == key ) setTimeout(cb,0,e); });
         },
     });
+    
+    $.fn.onSwipe = function(start_callback, stop_callback){//TODO also support mousedown/up
+    //TODO use touchmove to figure out inital direction before calling start_callback
+      $(document)
+        .on('touchstart', function(edown){
+          var touchstart = edown.originalEvent.touches[0];
+          $(document).on('touchend', function(eup){
+            $(this).off('touchend');
+            var touchend = eup.originalEvent.changedTouches[0];
+            var dx = (touchend.pageX - touchstart.pageX)/(eup.originalEvent.timeStamp - edown.originalEvent.timeStamp);
+            var dy = (touchend.pageY - touchstart.pageY)/(eup.originalEvent.timeStamp - edown.originalEvent.timeStamp);
+            stop_callback(dx, dy, edown, eup);
+          });
+        });
+        start_callback(touchstart, edown);
+    };
 })(jQuery);
